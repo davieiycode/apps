@@ -1,6 +1,6 @@
 {
-  "name": "Apps Script Web App",
-  "short_name": "Web App",
+  "name": "Piieroglyph",
+  "short_name": "Piieroglyph",
   "start_url": "/apps/",
   "scope": "/apps/",
   "display": "standalone",
