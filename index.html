@@ -8,7 +8,7 @@
     <meta http-equiv="Expires" content="0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Piieroglyph App</title>
-    <link rel="manifest" href="manifest.json?v=2">
+    <link rel="manifest" href="manifest.json?v=3">
     <style>
         body, html { 
             margin: 0; 
@@ -136,8 +136,8 @@
         }
 
         if ('serviceWorker' in navigator) {
-            // Ditambahkan versi unik (?v=2) agar service worker lama terhapus dari memori HP
-            navigator.serviceWorker.register('sw.js?v=2');
+            // Ditambahkan versi unik (?v=3) agar service worker lama terhapus dari memori HP
+            navigator.serviceWorker.register('sw.js?v=3');
         }
     </script>
 </body>
