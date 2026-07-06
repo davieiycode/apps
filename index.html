@@ -16,10 +16,24 @@
 </head>
 <body>
 
-    <!-- PASTE ALAMAT WEB APP APPS SCRIPT ANDA DI SINI -->
-    <iframe src="URL_APPS_SCRIPT_ANDA_DI_SINI" allow="camera; microphone; fullscreen; display-capture; geolocation"></iframe>
+    <iframe id="app-frame" allow="camera; microphone; fullscreen; display-capture; geolocation"></iframe>
 
     <script>
+        // Ambil URL dari parameter ?url= (jika ada)
+        const urlParams = new URLSearchParams(window.location.search);
+        let appUrl = urlParams.get('url');
+
+        // Jika tidak ada di parameter URL, gunakan link hardcoded ini (opsional)
+        if (!appUrl) {
+            appUrl = "URL_APPS_SCRIPT_ANDA_DI_SINI"; 
+        }
+
+        if (appUrl && appUrl !== "URL_APPS_SCRIPT_ANDA_DI_SINI") {
+            document.getElementById('app-frame').src = appUrl;
+        } else {
+            document.body.innerHTML = "<h3 style='text-align:center; margin-top:20px; font-family:sans-serif;'>Error: URL Apps Script belum diatur.<br><br>Tambahkan ?url=link_apps_script di akhir alamat website Anda.</h3>";
+        }
+
         if ('serviceWorker' in navigator) {
             // Ditambahkan versi unik (?v=2) agar service worker lama terhapus dari memori HP
             navigator.serviceWorker.register('sw.js?v=2');
