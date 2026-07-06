@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GAS PWA Builder</title>
+    <title>GAS PWA</title>
     <link rel="manifest" id="pwa-manifest">
     <style>
         body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #fff; font-family: sans-serif;}
@@ -22,23 +22,27 @@
         let appName = urlParams.get('name');
         let appIcon = urlParams.get('icon');
 
-        // Jika dibuka dari Home Screen (tanpa parameter), ambil data lama yang tersimpan di memori HP
+        // 1. Jika dibuka dari Home Screen (tanpa parameter), ambil data dari memori internal HP
         if (!appUrl) {
             appUrl = localStorage.getItem('saved_url');
             appName = localStorage.getItem('saved_name') || "GAS PWA";
             appIcon = localStorage.getItem('saved_icon') || "https://flaticon.com";
         } else {
-            // Jika ada parameter baru, simpan ke memori HP
+            // Jika diakses pertama kali lewat link panjang, kunci datanya ke memori HP
             appName = appName || "GAS PWA";
             appIcon = appIcon || "https://flaticon.com";
             
             localStorage.setItem('saved_url', appUrl);
             localStorage.setItem('saved_name', appName);
             localStorage.setItem('saved_icon', appIcon);
+
+            // TRIK UTAMA: Sembunyikan URL panjang dari address bar seketika setelah data tersimpan
+            const cleanUrl = window.location.origin + window.location.pathname;
+            window.history.replaceState({}, document.title, cleanUrl);
         }
 
-        if (appUrl && appUrl.startsWith('https://script.google.com')) {
-            // Terapkan manifest dinamis agar tombol Install muncul dengan Nama & Ikon yang sesuai
+        if (appUrl && appUrl.startsWith('https://google.com')) {
+            // Terapkan manifest fisik buatan (Blob) agar Android memicu mode Standalone
             applyManifest(appName, appIcon);
 
             const frame = document.getElementById('appFrame');
@@ -47,11 +51,8 @@
             frame.style.display = 'block';
         } else {
             document.getElementById('msg').innerHTML = `
-                <h3>Cara Penggunaan:</h3>
-                <p>Ketik URL di address bar dengan format berikut:</p>
-                <code style="display:block; background:#eee; padding:10px; word-break:break-all; text-align:left;">
-                ${window.location.origin}${window.location.pathname}?name=<b>NamaAplikasi</b>&icon=<b>https://link.com</b>&url=<b>URL_APPS_SCRIPT</b>
-                </code>
+                <h3>Mesin PWA Siap!</h3>
+                <p>Silakan gunakan format URL parameter untuk mendaftarkan aplikasi Anda.</p>
             `;
         }
 
@@ -60,7 +61,7 @@
             const manifestObj = {
                 "name": name,
                 "short_name": name,
-                "start_url": window.location.origin + window.location.pathname,
+                "start_url": "/apps/",
                 "display": "standalone",
                 "background_color": "#ffffff",
                 "theme_color": "#4285F4",
