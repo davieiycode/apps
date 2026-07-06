@@ -18,58 +18,43 @@
 
     <script>
         const urlParams = new URLSearchParams(window.location.search);
-        let appUrl = urlParams.get('url') || localStorage.getItem('saved_url');
+        let appUrl = urlParams.get('url');
+        let appName = urlParams.get('name');
+        let appIcon = urlParams.get('icon');
+
+        // Jika dibuka dari Home Screen (tanpa parameter), ambil data lama yang tersimpan di memori HP
+        if (!appUrl) {
+            appUrl = localStorage.getItem('saved_url');
+            appName = localStorage.getItem('saved_name') || "GAS PWA";
+            appIcon = localStorage.getItem('saved_icon') || "https://flaticon.com";
+        } else {
+            // Jika ada parameter baru, simpan ke memori HP
+            appName = appName || "GAS PWA";
+            appIcon = appIcon || "https://flaticon.com";
+            
+            localStorage.setItem('saved_url', appUrl);
+            localStorage.setItem('saved_name', appName);
+            localStorage.setItem('saved_icon', appIcon);
+        }
 
         if (appUrl && appUrl.startsWith('https://script.google.com')) {
-            localStorage.setItem('saved_url', appUrl);
-            
-            // Ambil nama app dan ikon yang sudah disimpan sebelumnya (jika ada)
-            let appName = localStorage.getItem('saved_name') || "GAS PWA";
-            let appIcon = localStorage.getItem('saved_icon') || "https://flaticon.com";
-            
-            // Terapkan Manifest Sementara
+            // Terapkan manifest dinamis agar tombol Install muncul dengan Nama & Ikon yang sesuai
             applyManifest(appName, appIcon);
 
-            // Tampilkan Apps Script di Iframe
             const frame = document.getElementById('appFrame');
             document.getElementById('msg').style.display = 'none';
             frame.src = appUrl;
             frame.style.display = 'block';
-
-            // TRIK UTAMA: Intip isi Favicon dan Title asli dari Apps Script Anda setelah termuat
-            frame.onload = function() {
-                try {
-                    // Cari tag <link rel="shortcut icon"> yang dibuat oleh .setFaviconUrl()
-                    const iframeDocument = frame.contentDocument || frame.contentWindow.document;
-                    const faviconTag = iframeDocument.querySelector("link[rel*='icon']");
-                    const titleTag = iframeDocument.querySelector("title");
-
-                    if (faviconTag && faviconTag.href) appIcon = faviconTag.href;
-                    if (titleTag && titleTag.innerText) appName = titleTag.innerText;
-
-                    // Simpan data asli yang akurat dari Apps Script ke HP
-                    localStorage.setItem('saved_name', appName);
-                    localStorage.setItem('saved_icon', appIcon);
-                    
-                    // Perbarui manifest dengan ikon & nama asli dari Apps Script
-                    applyManifest(appName, appIcon);
-                } catch(e) {
-                    // Jika terhalang CORS saat pertama kali load, browser akan tetap memakai manifest sementara di atas
-                    console.log("Membaca data manifest alternatif...");
-                }
-            };
-
         } else {
             document.getElementById('msg').innerHTML = `
-                <h3>Cara Penggunaan Baru:</h3>
-                <p>Cukup ketik URL Apps Script saja di belakang address bar:</p>
-                <code style="display:block; background:#eee; padding:10px; word-break:break-all;">
-                ${window.location.origin}${window.location.pathname}?url=<b>URL_APPS_SCRIPT_ANDA</b>
+                <h3>Cara Penggunaan:</h3>
+                <p>Ketik URL di address bar dengan format berikut:</p>
+                <code style="display:block; background:#eee; padding:10px; word-break:break-all; text-align:left;">
+                ${window.location.origin}${window.location.pathname}?name=<b>NamaAplikasi</b>&icon=<b>https://link.com</b>&url=<b>URL_APPS_SCRIPT</b>
                 </code>
             `;
         }
 
-        // Fungsi membuat manifest dinamis
         function applyManifest(name, icon) {
             document.title = name;
             const manifestObj = {
