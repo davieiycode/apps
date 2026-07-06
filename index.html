@@ -3,62 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GAS PWA Builder</title>
-    <!-- Memanggil manifest statis bawaan agar lolos verifikasi standalone Chrome Android -->
+    <title>Piieroglyph</title>
+    <!-- Memanggil manifest fisik asli agar Android memicu PWA Standalone -->
     <link rel="manifest" href="manifest.json">
     <style>
-        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #fff; font-family: sans-serif;}
-        iframe { border: none; width: 100%; height: 100%; display: none; }
-        .msg { padding: 20px; text-align: center; color: #555; }
+        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #fff; }
+        iframe { border: none; width: 100%; height: 100%; display: block; }
     </style>
 </head>
 <body>
 
-    <div id="statusMessage" class="msg">Menghubungkan ke Apps Script...</div>
-    <iframe id="appFrame"></iframe>
+    <!-- Link Apps Script Anda langsung dikunci di sini, aman dan tersembunyi dari user -->
+    <iframe src="https://google.com"></iframe>
 
     <script>
-        // 1. Tangkap parameter dari URL saat pendaftaran pertama kali
-        const urlParams = new URLSearchParams(window.location.search);
-        let appUrl = urlParams.get('url');
-        let appName = urlParams.get('name') || "Piieroglyph"; // Default nama jika parameter kosong
-
-        // 2. Logika Sesi PWA
-        if (appUrl) {
-            // Ini pendaftaran pertama (lewat link panjang). Simpan data URL secara permanen di HP
-            localStorage.setItem('saved_url', appUrl);
-            localStorage.setItem('saved_name', appName);
-        } else {
-            // Ini dipicu saat ikon di Home Screen diklik (tanpa membawa parameter di URL)
-            appUrl = localStorage.getItem('saved_url');
-            appName = localStorage.getItem('saved_name') || "Piieroglyph";
+        // Registrasi Service Worker wajib Android
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
         }
-
-        // 3. Tampilkan Aplikasi & Sembunyikan URL Panjang
-        if (appUrl && appUrl.startsWith('https://google.com')) {
-            document.title = appName;
-            
-            const frame = document.getElementById('appFrame');
-            document.getElementById('statusMessage').style.display = 'none';
-            frame.src = appUrl;
-            frame.style.display = 'block';
-
-            // TRIK UTAMA: Bersihkan URL address bar hanya JIKA aplikasi dibuka lewat link pendaftaran
-            if (window.location.search.includes('url=')) {
-                // Jangan hapus langsung, tunggu iframe selesai loading penuh agar verifikasi Chrome aman
-                frame.onload = function() {
-                    const cleanUrl = window.location.origin + window.location.pathname;
-                    window.history.replaceState({}, document.title, cleanUrl);
-                };
-            }
-        } else {
-            document.getElementById('statusMessage').innerHTML = `
-                <h3>Mesin PWA Siap!</h3>
-                <p style="color:red;">Error: Masukkan URL Apps Script Anda dengan benar.</p>
-            `;
-        }
-
-        if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
     </script>
 </body>
 </html>
