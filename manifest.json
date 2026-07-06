@@ -1,7 +1,8 @@
 {
   "name": "Apps Script Web App",
   "short_name": "Web App",
-  "start_url": "/apps/",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#4285F4",
