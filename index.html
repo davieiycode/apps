@@ -23,7 +23,15 @@
         const urlParams = new URLSearchParams(window.location.search);
         let appUrl = urlParams.get('url');
 
-        // Jika tidak ada di parameter URL, gunakan link hardcoded ini (opsional)
+        // Jika ada di parameter, simpan ke memori HP agar saat dibuka dari Home Screen tetap ingat
+        if (appUrl) {
+            localStorage.setItem('savedAppsScriptUrl', appUrl);
+        } else {
+            // Jika tidak ada parameter (misal dibuka dari layar utama), ambil dari memori
+            appUrl = localStorage.getItem('savedAppsScriptUrl');
+        }
+
+        // Jika tidak ada di memori dan tidak ada di parameter, fallback ke hardcode
         if (!appUrl) {
             appUrl = "URL_APPS_SCRIPT_ANDA_DI_SINI"; 
         }
@@ -31,7 +39,7 @@
         if (appUrl && appUrl !== "URL_APPS_SCRIPT_ANDA_DI_SINI") {
             document.getElementById('app-frame').src = appUrl;
         } else {
-            document.body.innerHTML = "<h3 style='text-align:center; margin-top:20px; font-family:sans-serif;'>Error: URL Apps Script belum diatur.<br><br>Tambahkan ?url=link_apps_script di akhir alamat website Anda.</h3>";
+            document.body.innerHTML = "<h3 style='text-align:center; margin-top:20px; font-family:sans-serif;'>Error: URL Apps Script belum diatur.<br><br>Buka pertama kali dengan menambahkan ?url=link_apps_script di akhir alamat website Anda.</h3>";
         }
 
         if ('serviceWorker' in navigator) {
