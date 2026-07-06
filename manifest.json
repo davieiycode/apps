@@ -1,0 +1,15 @@
+{
+  "name": "Piieroglyph",
+  "short_name": "Piieroglyph",
+  "start_url": "/apps/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4285F4",
+  "icons": [
+    {
+      "src": "https://google.com",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
