@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GAS PWA Builder</title>
+    <link rel="manifest" id="pwa-manifest">
+    <style>
+        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #fff; font-family: sans-serif;}
+        iframe { border: none; width: 100%; height: 100%; display: none; }
+        .error { padding: 20px; text-align: center; }
+    </style>
+</head>
+<body>
+
+    <div id="msg" class="error">Menghubungkan ke Apps Script...</div>
+    <iframe id="appFrame"></iframe>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        let appUrl = urlParams.get('url') || localStorage.getItem('saved_url');
+
+        if (appUrl && appUrl.startsWith('https://script.google.com')) {
+            localStorage.setItem('saved_url', appUrl);
+            
+            // Ambil nama app dan ikon yang sudah disimpan sebelumnya (jika ada)
+            let appName = localStorage.getItem('saved_name') || "GAS PWA";
+            let appIcon = localStorage.getItem('saved_icon') || "https://flaticon.com";
+            
+            // Terapkan Manifest Sementara
+            applyManifest(appName, appIcon);
+
+            // Tampilkan Apps Script di Iframe
+            const frame = document.getElementById('appFrame');
+            document.getElementById('msg').style.display = 'none';
+            frame.src = appUrl;
+            frame.style.display = 'block';
+
+            // TRIK UTAMA: Intip isi Favicon dan Title asli dari Apps Script Anda setelah termuat
+            frame.onload = function() {
+                try {
+                    // Cari tag <link rel="shortcut icon"> yang dibuat oleh .setFaviconUrl()
+                    const iframeDocument = frame.contentDocument || frame.contentWindow.document;
+                    const faviconTag = iframeDocument.querySelector("link[rel*='icon']");
+                    const titleTag = iframeDocument.querySelector("title");
+
+                    if (faviconTag && faviconTag.href) appIcon = faviconTag.href;
+                    if (titleTag && titleTag.innerText) appName = titleTag.innerText;
+
+                    // Simpan data asli yang akurat dari Apps Script ke HP
+                    localStorage.setItem('saved_name', appName);
+                    localStorage.setItem('saved_icon', appIcon);
+                    
+                    // Perbarui manifest dengan ikon & nama asli dari Apps Script
+                    applyManifest(appName, appIcon);
+                } catch(e) {
+                    // Jika terhalang CORS saat pertama kali load, browser akan tetap memakai manifest sementara di atas
+                    console.log("Membaca data manifest alternatif...");
+                }
+            };
+
+        } else {
+            document.getElementById('msg').innerHTML = `
+                <h3>Cara Penggunaan Baru:</h3>
+                <p>Cukup ketik URL Apps Script saja di belakang address bar:</p>
+                <code style="display:block; background:#eee; padding:10px; word-break:break-all;">
+                ${window.location.origin}${window.location.pathname}?url=<b>URL_APPS_SCRIPT_ANDA</b>
+                </code>
+            `;
+        }
+
+        // Fungsi membuat manifest dinamis
+        function applyManifest(name, icon) {
+            document.title = name;
+            const manifestObj = {
+                "name": name,
+                "short_name": name,
+                "start_url": window.location.origin + window.location.pathname,
+                "display": "standalone",
+                "background_color": "#ffffff",
+                "theme_color": "#4285F4",
+                "icons": [{ "src": icon, "sizes": "512x512", "type": "image/png" }]
+            };
+            const blob = new Blob([JSON.stringify(manifestObj)], {type: 'application/json'});
+            document.getElementById('pwa-manifest').setAttribute('href', URL.createObjectURL(blob));
+        }
+
+        if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
+    </script>
+</body>
+</html>
