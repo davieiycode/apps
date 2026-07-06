@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <!-- Meta tag anti-cache agar browser wajib mengambil versi terbaru -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rawuh App</title>
+    <link rel="manifest" href="manifest.json?v=3">
+    <style>
+        body, html { 
+            margin: 0; 
+            padding: 0; 
+            height: 100%; 
+            overflow: hidden; 
+            background: #ffffff; 
+            position: relative;
+        }
+        iframe { 
+            border: none; 
+            width: 100%; 
+            height: 100%; 
+            display: block; 
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        /* Desain Pop-up Install */
+        #install-popup {
+            position: fixed;
+            bottom: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ffffff;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.15);
+            padding: 16px 20px;
+            border-radius: 16px 16px 0 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 450px;
+            box-sizing: border-box;
+            transition: bottom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-family: system-ui, -apple-system, sans-serif;
+            z-index: 9999;
+        }
+        #install-popup.show {
+            bottom: 0;
+        }
+        #install-popup .text {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+        }
+        #install-popup button {
+            background: #4285F4;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(66, 133, 244, 0.3);
+        }
+    </style>
+</head>
+<body>
+
+    <iframe id="app-frame" allow="camera; microphone; fullscreen; display-capture; geolocation"></iframe>
+
+    <!-- Pop-up Custom Install -->
+    <div id="install-popup">
+        <div class="text">Instal aplikasi ini ke layar utama!</div>
+        <button id="install-btn">Instal App</button>
+    </div>
+
+    <script>
+        // --- LOGIKA INSTALL PWA (POP-UP) ---
+        let deferredPrompt;
+        const installPopup = document.getElementById('install-popup');
+        const installBtn = document.getElementById('install-btn');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Cegah prompt default dari browser agar kita bisa memunculkan pop-up kita sendiri
+            e.preventDefault();
+            deferredPrompt = e;
+            // Munculkan popup dari bawah
+            setTimeout(() => {
+                installPopup.classList.add('show');
+            }, 1500); // Tunda sedikit agar lebih natural
+        });
+
+        installBtn.addEventListener('click', async () => {
+            // Sembunyikan popup
+            installPopup.classList.remove('show');
+            if (deferredPrompt) {
+                // Tampilkan prompt bawaan HP
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                deferredPrompt = null;
+            }
+        });
+
+        window.addEventListener('appinstalled', () => {
+            // Jika berhasil diinstal, pastikan popup hilang
+            installPopup.classList.remove('show');
+        });
+
+        // --- LOGIKA LOAD APPS SCRIPT URL ---
+        // Ambil URL dari parameter ?url= (jika ada)
+        const urlParams = new URLSearchParams(window.location.search);
+        let appUrl = urlParams.get('url');
+
+        // Jika ada di parameter, simpan ke memori HP agar saat dibuka dari Home Screen tetap ingat
+        if (appUrl) {
+            localStorage.setItem('savedAppsScriptUrl_rawuh', appUrl);
+        } else {
+            // Jika tidak ada parameter (misal dibuka dari layar utama), ambil dari memori
+            appUrl = localStorage.getItem('savedAppsScriptUrl_rawuh');
+        }
+
+        // Jika tidak ada di memori dan tidak ada di parameter, fallback ke hardcode
+        if (!appUrl) {
+            appUrl = "URL_APPS_SCRIPT_ANDA_DI_SINI"; 
+        }
+
+        if (appUrl && appUrl !== "URL_APPS_SCRIPT_ANDA_DI_SINI") {
+            document.getElementById('app-frame').src = appUrl;
+        } else {
+            document.body.innerHTML = "<h3 style='text-align:center; margin-top:20px; font-family:sans-serif;'>Error: URL Apps Script belum diatur.<br><br>Buka pertama kali dengan menambahkan ?url=link_apps_script di akhir alamat website Anda.</h3>";
+        }
+
+        if ('serviceWorker' in navigator) {
+            // Ditambahkan versi unik (?v=3) agar service worker lama terhapus dari memori HP
+            navigator.serviceWorker.register('sw.js?v=3');
+        }
+    </script>
+</body>
+</html>
