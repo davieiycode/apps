@@ -10,8 +10,24 @@
     <title>Piieroglyph App</title>
     <link rel="manifest" href="manifest.json?v=2">
     <style>
-        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #ffffff; }
-        iframe { border: none; width: 100%; height: 100%; display: block; }
+        body, html { 
+            margin: 0; 
+            padding: 0; 
+            height: 100%; 
+            overflow: hidden; 
+            background: #ffffff; 
+            position: relative;
+        }
+        /* Trik menyembunyikan banner Google Apps Script */
+        iframe { 
+            border: none; 
+            width: 100%; 
+            height: calc(100% + 36px); 
+            display: block; 
+            position: absolute;
+            top: -36px;
+            left: 0;
+        }
     </style>
 </head>
 <body>
