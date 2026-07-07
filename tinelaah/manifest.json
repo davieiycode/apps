@@ -4,8 +4,8 @@
   "start_url": "/apps/tinelaah/",
   "scope": "/apps/tinelaah/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#4285F4",
+  "background_color": "rgb(164, 16, 52, 1)",
+  "theme_color": "rgb(164, 16, 52, 1)",
   "icons": [
     {
       "src": "icon-192.png",
