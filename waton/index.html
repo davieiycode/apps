@@ -7,7 +7,8 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cuan</title>
+    <meta name="theme-color" content="#a41034">
+    <title>Waton</title>
     <link rel="manifest" href="manifest.json?v=3">
     <style>
         body, html { 
@@ -15,7 +16,7 @@
             padding: 0; 
             height: 100%; 
             overflow: hidden; 
-            background: #f9f6f0; 
+            background: #a41034; 
             position: relative;
         }
         iframe { 
@@ -33,8 +34,8 @@
             bottom: -100px;
             left: 50%;
             transform: translateX(-50%);
-            background: #2d5a27;
-            box-shadow: 0 -4px 15px #2d5a27;
+            background: #a41034;
+            box-shadow: 0 -4px 15px #a41034;
             padding: 16px 20px;
             border-radius: 16px 16px 0 0;
             display: flex;
@@ -53,18 +54,18 @@
         #install-popup .text {
             font-size: 15px;
             font-weight: 600;
-            color: #333;
+            color: #fff;
         }
         #install-popup button {
-            background: #2d5a27;
-            color: white;
+            background: #fff;
+            color: #a41034;
             border: none;
             padding: 10px 18px;
             border-radius: 8px;
             font-weight: bold;
             font-size: 14px;
             cursor: pointer;
-            box-shadow: 0 2px 4px #2d5a27;
+            box-shadow: 0 2px 4px #a41034;
         }
     </style>
 </head>
@@ -74,7 +75,7 @@
 
     <!-- Pop-up Custom Install -->
     <div id="install-popup">
-        <div class="text">Add Cuan to Home Screen</div>
+        <div class="text">Add Waton to Home Screen</div>
         <button id="install-btn">Add</button>
     </div>
 
@@ -117,10 +118,10 @@
 
         // Jika ada di parameter, simpan ke memori HP agar saat dibuka dari Home Screen tetap ingat
         if (appUrl) {
-            localStorage.setItem('savedAppsScriptUrl_finance', appUrl);
+            localStorage.setItem('savedAppsScriptUrl_waton', appUrl);
         } else {
             // Jika tidak ada parameter (misal dibuka dari layar utama), ambil dari memori
-            appUrl = localStorage.getItem('savedAppsScriptUrl_finance');
+            appUrl = localStorage.getItem('savedAppsScriptUrl_waton');
         }
 
         // Jika tidak ada di memori dan tidak ada di parameter, fallback ke hardcode
